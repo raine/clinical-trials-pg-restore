@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+base_url=https://aact.ctti-clinicaltrials.org
+latest_snapshot_path=$(curl -s "$base_url/snapshots" | pup 'a[href*="daily"] attr{href}' | head -n1)
+latest_snapshot_url="$base_url$latest_snapshot_path"
+wget "$latest_snapshot_url"
+unzip ./*.zip
+pg_restore --clean --create --no-acl --no-owner -d "$DATABASE_URL" postgres_data.dmp
